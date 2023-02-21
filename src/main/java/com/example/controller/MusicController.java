@@ -2,16 +2,22 @@ package com.example.controller;
 
 import com.example.model.dto.AlbumDTO;
 import com.example.service.AlbumService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+
+
 
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class MusicController {
+
+    Logger LOGGER = LoggerFactory.getLogger(MusicController.class);
 
     @Inject
     AlbumService albumService;
@@ -19,10 +25,10 @@ public class MusicController {
     @GET
     @Path("/albums/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAlbumById(@PathParam("id") Long id) {
+    public AlbumDTO getAlbumById(@PathParam("id") Long id) {
+        LOGGER.info("Request arrived with param: {}",id);
         try {
-            AlbumDTO albumDTO = albumService.getAlbumById(id);
-            return Response.ok().entity(albumDTO).build();
+            return albumService.getAlbumById(id);
         } catch (Exception e) {
             throw new NotFoundException();
         }

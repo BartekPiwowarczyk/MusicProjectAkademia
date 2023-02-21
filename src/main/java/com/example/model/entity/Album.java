@@ -1,10 +1,14 @@
 package com.example.model.entity;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
-@NamedQuery(name="Album.findById",query="Select a from Album a where a.id= :id")
-//@NamedQuery(name="Album.findAllSongsById")
+
+@NamedQuery(name="Album.findById",query="select distinct a from Album a join fetch a.artistId ar join fetch a.albumSongs s join fetch s.song  where a.id= :id order by s.position asc")
 @Entity
 @Table(name="ALBUMS")
 public class Album {
@@ -26,21 +30,13 @@ public class Album {
 
     @OneToMany
     @JoinColumn(name = "ALBUM_ID", referencedColumnName="ALBUM_ID")
-    private Set<AlbumSong> albumSongs;
-
-    public Set<AlbumSong> getAlbumSongs() {
-        return albumSongs;
-    }
-
-    public void setAlbumSongs(Set<AlbumSong> albumSongs) {
-        this.albumSongs = albumSongs;
-    }
+    private List<AlbumSong> albumSongs;
 
 
     public Album() {
     }
 
-    public Album(Long id, String title, String edition, Artist artistId, Set<AlbumSong> albumSongs) {
+    public Album(Long id, String title, String edition, Artist artistId, List<AlbumSong> albumSongs) {
         this.id = id;
         this.title = title;
         this.edition = edition;
@@ -80,5 +76,11 @@ public class Album {
         this.artistId = artistId;
     }
 
+    public List<AlbumSong> getAlbumSongs() {
+        return albumSongs;
+    }
 
+    public void setAlbumSongs(List<AlbumSong> albumSongs) {
+        this.albumSongs = albumSongs;
+    }
 }

@@ -2,6 +2,7 @@ package com.example.model.entity;
 
 import javax.persistence.*;
 
+@NamedQuery(name="AlbumSong.findAllSongsByAlbumId",query = "SELECT s.song from AlbumSong s where s.id.albumId = :id")
 @Entity
 @Table(name="ALBUMS_SONGS")
 public class AlbumSong {
@@ -27,14 +28,6 @@ public class AlbumSong {
         this.position = position;
     }
 
-    public AlbumSongPK getId() {
-        return id;
-    }
-
-    public void setId(AlbumSongPK id) {
-        this.id = id;
-    }
-
     public Song getSong() {
         return song;
     }
@@ -42,6 +35,4 @@ public class AlbumSong {
     public void setSong(Song song) {
         this.song = song;
     }
-
-
 }

@@ -15,6 +15,7 @@
     <quarkus.platform.version>2.16.3.Final</quarkus.platform.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
+    <mapstruct.version>1.5.3.Final</mapstruct.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -81,6 +82,16 @@
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-mysql</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.36</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>${mapstruct.version}</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -103,6 +114,13 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${compiler-plugin.version}</version>
         <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>${mapstruct.version}</version>
+            </path>
+          </annotationProcessorPaths>
           <compilerArgs>
             <arg>-parameters</arg>
           </compilerArgs>
@@ -128,6 +146,7 @@
               <goal>verify</goal>
             </goals>
             <configuration>
+
               <systemPropertyVariables>
                 <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>

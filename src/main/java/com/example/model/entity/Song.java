@@ -5,6 +5,8 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="SONGS")
+@NamedQuery(name="Song.findById",query = "SELECT s from Song s where s.id = :id")
+@NamedQuery(name="Song.findAll", query = "SELECT s from Song s")
 public class Song {
 
     @Column(name="SONG_ID")
@@ -70,4 +72,12 @@ public class Song {
     }
 
 
+    @Override
+    public String toString() {
+        return "Song{" +
+                "title='" + title + '\'' +
+                ", duration=" + duration +
+                ", remarks='" + remarks + '\'' +
+                '}';
+    }
 }
