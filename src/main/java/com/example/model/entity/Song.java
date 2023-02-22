@@ -5,7 +5,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="SONGS")
-@NamedQuery(name="Song.findById",query = "SELECT s from Song s where s.id = :id")
+@NamedQuery(name="Song.findById",query = "SELECT NEW com.example.model.dto.SongDTO(s.title,s.remarks,s.duration) from Song s where s.id = :id")
 @NamedQuery(name="Song.findAll", query = "SELECT s from Song s")
 public class Song {
 

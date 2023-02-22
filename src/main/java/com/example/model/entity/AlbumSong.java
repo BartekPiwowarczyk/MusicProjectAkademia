@@ -2,7 +2,6 @@ package com.example.model.entity;
 
 import javax.persistence.*;
 
-@NamedQuery(name="AlbumSong.findAllSongsByAlbumId",query = "SELECT s.song from AlbumSong s where s.id.albumId = :id")
 @Entity
 @Table(name="ALBUMS_SONGS")
 public class AlbumSong {

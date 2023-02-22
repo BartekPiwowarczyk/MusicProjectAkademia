@@ -6,9 +6,9 @@ import org.hibernate.annotations.FetchMode;
 import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
-
-
-@NamedQuery(name="Album.findById",query="select distinct a from Album a join fetch a.artistId ar join fetch a.albumSongs s join fetch s.song  where a.id= :id order by s.position asc")
+//join fetch a.artistId ar join fetch a.albumSongs s join fetch s.song
+//        order by s.position asc
+@NamedQuery(name="Album.findById",query="select NEW com.example.model.dto.AlbumDTO(a.title,a.edition,a.artistId.id) from Album a where a.id= :id")
 @Entity
 @Table(name="ALBUMS")
 public class Album {
