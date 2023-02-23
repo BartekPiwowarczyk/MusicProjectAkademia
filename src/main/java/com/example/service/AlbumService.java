@@ -24,10 +24,12 @@ public class AlbumService {
 
     public AlbumDTO getAlbumDTOById(Long id) {
         LOGGER.info("AlbumService getAlbumById({})",id);
-     AlbumDTO albumDTO = em.createNamedQuery("Album.findById",AlbumDTO.class).setParameter("id",id).getResultList().stream().findFirst().orElse(null);
+        Album album = em.createNamedQuery("Album.findById",Album.class).setParameter("id",id).getResultList().stream().findFirst().orElse(null);
+        AlbumDTO albumDTO = albumMapper.fromAlbum(album);
         LOGGER.info("AlbumDTO with param({})",id);
         return albumDTO;
     }
+
 
     @Transactional
     public AlbumDTO createNewAlbum(AlbumDTO albumDTO) {

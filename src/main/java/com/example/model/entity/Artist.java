@@ -3,7 +3,7 @@ package com.example.model.entity;
 import javax.persistence.*;
 
 @NamedQuery(name="Artist.findById",query = "SELECT NEW com.example.model.dto.ArtistDTO(a.name,a.firstname) FROM Artist a where a.id= :id")
-@NamedQuery(name="Artist.findArtistById",query = "SELECT a FROM Artist a where a.id= :id")
+@NamedQuery(name="Artist.findArtistByName",query = "SELECT a FROM Artist a where a.name= :name")
 @Entity
 @Table(name="ARTISTS")
 public class Artist {

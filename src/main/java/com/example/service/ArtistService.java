@@ -22,14 +22,19 @@ public class ArtistService {
         return em.createNamedQuery("Artist.findById",ArtistDTO.class).setParameter("id",id).getResultList().stream().findFirst().orElse(null);
     }
 
-    public Artist findArtistById(Long id) {
-        return em.createNamedQuery("Artist.findArtistById",Artist.class).setParameter("id",id).getResultList().stream().findFirst().orElse(null);
+    public Artist findOrCreateArtist(ArtistDTO artistDTO) {
+        return em.createNamedQuery("Artist.findArtistByName",Artist.class)
+                .setParameter("name",artistDTO.name())
+                .getResultList()
+                .stream()
+                .findFirst()
+                .orElse(createNewArtist(artistDTO));
     }
 
     @Transactional
-    public ArtistDTO createNewArtist(ArtistDTO artistDTO) {
+    public Artist createNewArtist(ArtistDTO artistDTO) {
         Artist artist = artistMapper.fromArtistDTO(artistDTO);
         em.persist(artist);
-        return artistDTO;
+        return artist;
     }
 }

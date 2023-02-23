@@ -10,4 +10,6 @@ public interface ArtistMapper {
 
     Artist fromArtistDTO(ArtistDTO artistDTO);
 
+    ArtistDTO fromArtist(Artist artist);
+
 }

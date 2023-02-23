@@ -8,4 +8,6 @@ import org.mapstruct.Mapper;
 public interface SongMapper {
 
     Song fromSongDTO(SongDTO songDTO);
+
+    SongDTO fromSong(Song song);
 }
