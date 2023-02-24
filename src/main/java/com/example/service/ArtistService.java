@@ -23,12 +23,21 @@ public class ArtistService {
     }
 
     public Artist findOrCreateArtist(ArtistDTO artistDTO) {
-        return em.createNamedQuery("Artist.findArtistByName",Artist.class)
-                .setParameter("name",artistDTO.name())
-                .getResultList()
-                .stream()
-                .findFirst()
-                .orElse(createNewArtist(artistDTO));
+        if (artistDTO == null) {
+            Artist artist = em.createNamedQuery("Artist.findUnknownArtist",Artist.class).getSingleResult();
+            artist.setName("Unknown");
+            em.persist(artist);
+            return artist;
+        } else {
+            Artist artist = em.createNamedQuery("Artist.findArtistByName", Artist.class)
+                    .setParameter("name", artistDTO.getName())
+                    .getResultList()
+                    .stream()
+                    .findFirst().orElse(null);
+            if (artist == null)
+                artist = createNewArtist(artistDTO);
+            return artist;
+        }
     }
 
     @Transactional

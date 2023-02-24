@@ -43,7 +43,7 @@ public class MusicController {
         }
     }
 
-    @POST
+    @PUT
     @Path("/albums")
     public Response createNewAlbum(AlbumDTO albumDTO) {
         try {
@@ -77,16 +77,16 @@ public class MusicController {
         return songService.getSongDTOById(id);
     }
 
-    @POST
-    @Path("/songs")
-    public Response createNewSong(SongDTO songDTO) {
-        try {
-            songService.createNewSong(songDTO);
-            return Response.status(201).entity(songDTO).build();
-        } catch (Exception e) {
-            return Response.status(404).build();
-        }
-    }
+//    @POST
+//    @Path("/songs")
+//    public Response createNewSong(SongDTO songDTO) {
+//        try {
+//            songService.createNewSong(songDTO);
+//            return Response.status(201).entity(songDTO).build();
+//        } catch (Exception e) {
+//            return Response.status(404).build();
+//        }
+//    }
 
 
 }

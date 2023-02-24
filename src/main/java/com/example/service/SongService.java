@@ -5,10 +5,13 @@ import com.example.model.entity.Song;
 import com.example.model.mapper.SongMapper;
 
 
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+
 import javax.transaction.Transactional;
+
 
 @ApplicationScoped
 public class SongService {
@@ -29,4 +32,13 @@ public class SongService {
         return songDTO;
     }
 
+//    //WONDER
+//    Session session = Hibernate
+//    CriteriaBuilder cb = session.getCriteriaBuilder();
+//    CriteriaQuery<Song> cr = cb.createQuery(Song.class);
+//    Root<Song> root = cr.from(Song.class);
+//    cr.select(root);
+//
+//    Query<Song> query = session.createQuery(cr);
+//    List<Song> results = query.getResultList();
 }

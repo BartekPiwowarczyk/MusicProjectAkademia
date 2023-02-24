@@ -14,7 +14,9 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper(uses={ArtistMapper.class,SongMapper.class,AlbumSongMapper.class},componentModel = "cdi")
+//"java(new com.example.model.entity.Artist())"
+
+@Mapper(uses={ArtistMapper.class,AlbumSongMapper.class},componentModel = "cdi")
 public abstract class AlbumMapper {
 
     @Inject
@@ -24,7 +26,7 @@ public abstract class AlbumMapper {
     SongService songService;
 
     @Mapping(target = "artistId",expression = "java(artistService.findOrCreateArtist(albumDTO.artistDTO()))")
-    @Mapping(source = "albumSongsDTO",target = "albumSongs")
+    @Mapping(target = "albumSongs",expression = "java(new java.util.ArrayList<AlbumSong>())")
 //    @Mapping(target = "albumSongs",expression = )
 //    @Mapping(source="artistDTO",target = "artistId")
     public abstract Album fromAlbumDTO(AlbumDTO albumDTO);

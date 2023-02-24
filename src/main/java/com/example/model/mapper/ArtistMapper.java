@@ -8,6 +8,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "cdi")
 public interface ArtistMapper {
 
+    @Mapping(target = "id",ignore = true)
+    @Mapping(target = "firstname",ignore = true)
     Artist fromArtistDTO(ArtistDTO artistDTO);
 
     ArtistDTO fromArtist(Artist artist);
