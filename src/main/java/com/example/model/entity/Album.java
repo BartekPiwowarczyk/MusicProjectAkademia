@@ -6,7 +6,6 @@ import org.hibernate.annotations.FetchMode;
 import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
-
 @NamedQuery(name="Album.findById",query="select distinct a from Album a join fetch a.artistId ar join fetch a.albumSongs s join fetch s.song where a.id= :id order by s.position asc")
 @Entity
 @Table(name="ALBUMS")

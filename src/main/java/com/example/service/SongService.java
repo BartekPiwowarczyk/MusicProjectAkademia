@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.model.dto.SongDTO;
 import com.example.model.entity.Song;
+import com.example.model.entity.Song_;
 import com.example.model.mapper.SongMapper;
 
 
@@ -10,7 +11,11 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import javax.ws.rs.NotFoundException;
 
 
 @ApplicationScoped
@@ -32,13 +37,15 @@ public class SongService {
         return songDTO;
     }
 
-//    //WONDER
-//    Session session = Hibernate
-//    CriteriaBuilder cb = session.getCriteriaBuilder();
-//    CriteriaQuery<Song> cr = cb.createQuery(Song.class);
-//    Root<Song> root = cr.from(Song.class);
-//    cr.select(root);
-//
-//    Query<Song> query = session.createQuery(cr);
-//    List<Song> results = query.getResultList();
+//    SELECT NEW com.example.model.dto.SongDTO(s.title,s.remarks,s.duration) from Song s where s.id = :id
+
+    public SongDTO getSongDTOByIdWithCriteria(Long id) {
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<SongDTO> query = criteriaBuilder.createQuery(SongDTO.class);
+        Root<Song> song = query.from(Song.class);
+
+        query.select(criteriaBuilder.construct(SongDTO.class,song.get(Song_.title),song.get(Song_.remarks),song.get(Song_.duration)))
+                .where(criteriaBuilder.equal(song.get(Song_.id),criteriaBuilder.parameter(Long.class,"id")));
+        return em.createQuery(query).setParameter("id",id).getResultList().stream().findFirst().orElseThrow(()->new NotFoundException());
+    }
 }

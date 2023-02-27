@@ -1,8 +1,11 @@
 package com.example.controller;
 
 import com.example.model.dto.AlbumDTO;
+import com.example.model.dto.AlbumDTOO;
 import com.example.model.dto.ArtistDTO;
 import com.example.model.dto.SongDTO;
+import com.example.model.entity.Album;
+import com.example.model.entity.Artist;
 import com.example.service.AlbumService;
 import com.example.service.ArtistService;
 import com.example.service.SongService;
@@ -34,16 +37,27 @@ public class MusicController {
 
     @GET
     @Path("/albums/{id}")
-    public AlbumDTO getAlbumDTOById(@PathParam("id") Long id) {
+    public AlbumDTOO getAlbumDTOById(@PathParam("id") Long id) {
         LOGGER.info("Request arrived with param: {}", id);
         try {
-            return albumService.getAlbumDTOById(id);
+            return albumService.getAlbumDTOByIdWithCriteria(id);
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
+    }
+    @GET
+    @Path("/albums/entity/{id}")
+    public Album getAlbumById(@PathParam("id") Long id) {
+        LOGGER.info("Request arrived with param: {}", id);
+        try {
+            return albumService.getAlbumByIdWithCriteria(id);
         } catch (Exception e) {
             throw new NotFoundException();
         }
     }
 
-    @PUT
+
+        @PUT
     @Path("/albums")
     public Response createNewAlbum(AlbumDTO albumDTO) {
         try {
@@ -57,8 +71,15 @@ public class MusicController {
     @GET
     @Path("/artists/{id}")
     public ArtistDTO getArtistDTOById(@PathParam("id") Long id) {
-        return artistService.getArtistDTOById(id);
+        return artistService.getArtistDTOForIdWithCriteria(id);
     }
+
+    @GET
+    @Path("/artists/names/{name}")
+    public Artist getArtistByName(@PathParam("name") String name) {
+        return artistService.getArtistByNameWithCriteria(name);
+    }
+
 
     @POST
     @Path("/artists")
@@ -74,7 +95,7 @@ public class MusicController {
     @GET
     @Path("/songs/{id}")
     public SongDTO getSongDTOById(@PathParam("id") Long id) {
-        return songService.getSongDTOById(id);
+        return songService.getSongDTOByIdWithCriteria(id);
     }
 
 //    @POST
