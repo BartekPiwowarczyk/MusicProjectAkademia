@@ -7,8 +7,8 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
 @NamedQuery(name="Album.findById",query="select distinct a from Album a join fetch a.artistId ar join fetch a.albumSongs s join fetch s.song where a.id= :id order by s.position asc")
-@NamedQuery(name="Album.findByIdWithResultTransformer",query = "select a.id,a.title,a.edition, ar.name, aso.position, song.title,song.remarks,song.duration from Album a left join a.artistId ar left join a.albumSongs aso left join aso.song song where a.id=:id")
-@NamedQuery(name = "Album.findWithResultTransformer",query = "select a.id,a.title,a.edition, ar.name, aso.position, song.title,song.remarks,song.duration from Album a left join a.artistId ar left join a.albumSongs aso left join aso.song song")
+@NamedQuery(name="Album.findByIdWithResultTransformer",query = "select a.id,a.title,a.edition, ar, aso.position, song.title,song.remarks,song.duration from Album a left join a.artistId ar left join a.albumSongs aso left join aso.song song where a.id=:id")
+@NamedQuery(name = "Album.findWithResultTransformer",query = "select a.id,a.title,a.edition, ar, aso.position, song.title,song.remarks,song.duration from Album a left join a.artistId ar left join a.albumSongs aso left join aso.song song")
 @Entity
 @Table(name="ALBUMS")
 public class Album {

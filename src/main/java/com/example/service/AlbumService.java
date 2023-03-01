@@ -4,6 +4,7 @@ package com.example.service;
 import com.example.model.dto.*;
 import com.example.model.entity.*;
 import com.example.model.mapper.AlbumMapper;
+import com.example.model.mapper.ArtistMapper;
 import org.hibernate.transform.ResultTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ public class AlbumService {
     EntityManager em;
 
     @Inject
-    ArtistService artistService;
+    ArtistMapper artistMapper;
     @Inject
     AlbumMapper albumMapper;
 
@@ -105,7 +106,7 @@ public class AlbumService {
                                 albumDTOOMap.putIfAbsent(albumId,new AlbumDTOO(
                                         (String) objects[1],
                                         (String) objects[2],
-                                        (String) objects[3],
+                                        artistMapper.fromArtist((Artist) objects[3]),
                                         new LinkedHashSet<>()
                                 ));
 
@@ -141,7 +142,7 @@ public List<AlbumDTOO> getAlbumDTOOListWithResultTransform() {
                             albumDTOOMap.putIfAbsent(albumId,new AlbumDTOO(
                                     (String) objects[1],
                                     (String) objects[2],
-                                    (String) objects[3],
+                                    artistMapper.fromArtist((Artist) objects[3]),
                                     new LinkedHashSet<>()
                             ));
 
