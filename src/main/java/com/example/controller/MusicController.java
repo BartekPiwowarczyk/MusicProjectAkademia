@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 
 @Path("/")
@@ -36,6 +37,18 @@ public class MusicController {
     SongService songService;
 
     @GET
+    @Path("/albums/artist/{id}")
+    public List<AlbumDTOO> getAlbumsByArtistIdDTOs(@PathParam("id") Long id){
+        LOGGER.info("Request arrived");
+        try {
+            return albumService.getAlbumsByArtistId(id);
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
+    }
+
+
+        @GET
     @Path("/albums/{id}")
     public AlbumDTOO getAlbumDTOById(@PathParam("id") Long id) {
         LOGGER.info("Request arrived with param: {}", id);
@@ -52,6 +65,31 @@ public class MusicController {
         try {
             return albumService.getAlbumByIdWithCriteria(id);
         } catch (Exception e) {
+            LOGGER.info("Exception in MusicController");
+            throw new NotFoundException();
+        }
+    }
+
+    @GET
+    @Path("/albums")
+    public List<Album> getAllAlbums() {
+        LOGGER.info("Request arrived");
+        try {
+            return albumService.getAllAlbum();
+        } catch (Exception e) {
+            LOGGER.info("Exception in MusicController");
+            throw new NotFoundException();
+        }
+    }
+
+    @GET
+    @Path("/albumsDTO")
+    public List<AlbumDTOO> getAllAlbumsDTO() {
+        LOGGER.info("Request arrived");
+        try {
+            return albumService.getAllAlbumDTOOOrderByAlbumTitle();
+        } catch (Exception e) {
+            LOGGER.info("Exception in MusicController");
             throw new NotFoundException();
         }
     }

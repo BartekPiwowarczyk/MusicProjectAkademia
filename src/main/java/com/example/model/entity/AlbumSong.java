@@ -34,4 +34,14 @@ public class AlbumSong {
     public void setSong(Song song) {
         this.song = song;
     }
+
+    public AlbumSongPK getId() {
+        return id;
+    }
+
+    public void setId(AlbumSongPK id) {
+        this.id = id;
+    }
+
+
 }
