@@ -9,4 +9,5 @@ import java.util.List;
 import java.util.Set;
 
 public record AlbumDTO (String title, String edition, ArtistDTO artistDTO, Collection<AlbumSongsDTO> albumSongsDTO) {
+
 }

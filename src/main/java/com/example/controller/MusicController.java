@@ -47,9 +47,20 @@ public class MusicController {
         }
     }
 
+    @GET
+    @Path("/albumsDTO/criteria")
+    public List<AlbumDTOO> getAllAlbumsDTO() {
+        LOGGER.info("Request arrived");
+        try {
+            return albumService.getAllAlbumDTOOrderByAlbumTitle();
+        } catch (Exception e) {
+            LOGGER.info("Exception in MusicController");
+            throw new NotFoundException();
+        }
+    }
 
     @GET
-    @Path("/albums/{id}")
+    @Path("/albumsDTO/criteria/{id}")
     public AlbumDTOO getAlbumDTOById(@PathParam("id") Long id) {
         LOGGER.info("Request arrived with param: {}", id);
         try {
@@ -59,32 +70,20 @@ public class MusicController {
         }
     }
 
-    @GET
-    @Path("/albums/transform/{id}")
-    public AlbumDTOO getAlbumDTOByIdWithResultTransform(@PathParam("id") Long id) {
-        LOGGER.info("Request arrived with param: {}", id);
-        try {
-            return albumService.getAlbumDTOOWithResultTransform(id);
-        } catch (Exception e) {
-            throw new NotFoundException();
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @GET
-    @Path("/albums/transform")
-    public List<AlbumDTOO> getAlbumDTOListByIdWithResultTransform() {
+    @Path("/albums/criteria")
+    public List<Album> getAllAlbums() {
         LOGGER.info("Request arrived");
         try {
-            return albumService.getAlbumDTOOListWithResultTransform();
+            return albumService.getAllAlbum();
         } catch (Exception e) {
+            LOGGER.info("Exception in MusicController");
             throw new NotFoundException();
         }
     }
-
     @GET
-    @Path("/albums/entity/{id}")
+    @Path("/albums/criteria/{id}")
     public Album getAlbumById(@PathParam("id") Long id) {
         LOGGER.info("Request arrived with param: {}", id);
         try {
@@ -96,31 +95,28 @@ public class MusicController {
     }
 
     @GET
-    @Path("/albums")
-    public List<Album> getAllAlbums() {
+    @Path("/albumsDTO/transform")
+    public List<AlbumDTO> getAlbumDTOListByIdWithResultTransform() {
         LOGGER.info("Request arrived");
         try {
-            return albumService.getAllAlbum();
+            return albumService.getAlbumDTOOListWithResultTransform();
         } catch (Exception e) {
-            LOGGER.info("Exception in MusicController");
             throw new NotFoundException();
         }
     }
-
     @GET
-    @Path("/albumsDTO")
-    public List<AlbumDTOO> getAllAlbumsDTO() {
-        LOGGER.info("Request arrived");
+    @Path("/albumsDTO/transform/{id}")
+    public AlbumDTO getAlbumDTOByIdWithResultTransform(@PathParam("id") Long id) {
+        LOGGER.info("Request arrived with param: {}", id);
         try {
-            return albumService.getAllAlbumDTOOOrderByAlbumTitle();
+            return albumService.getAlbumDTOOWithResultTransform(id);
         } catch (Exception e) {
-            LOGGER.info("Exception in MusicController");
             throw new NotFoundException();
         }
     }
 
 
-        @PUT
+    @PUT
     @Path("/albums")
     public Response createNewAlbum(AlbumDTO albumDTO) {
         try {

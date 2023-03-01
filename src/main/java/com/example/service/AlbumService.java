@@ -4,7 +4,9 @@ package com.example.service;
 import com.example.model.dto.*;
 import com.example.model.entity.*;
 import com.example.model.mapper.AlbumMapper;
+import com.example.model.mapper.AlbumSongMapper;
 import com.example.model.mapper.ArtistMapper;
+import org.hibernate.query.Query;
 import org.hibernate.transform.ResultTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +30,14 @@ public class AlbumService {
 
     @Inject
     ArtistMapper artistMapper;
+
+    @Inject
+    AlbumSongMapper albumSongMapper;
     @Inject
     AlbumMapper albumMapper;
 
+
+    //TODO NamedQuery
     public AlbumDTO getAlbumDTOById(Long id) {
         LOGGER.info("AlbumService getAlbumById({})", id);
         Album album = em.createNamedQuery("Album.findById", Album.class).setParameter("id", id).getResultList().stream().findFirst().orElse(null);
@@ -57,12 +64,11 @@ public class AlbumService {
         Root<Album> root = query.from(Album.class);
         Join<Album, Artist> artistJoin = (Join<Album, Artist>) root.fetch(Album_.artistId, JoinType.LEFT);
         Join<AlbumSong, Song> songJoin = (Join<AlbumSong, Song>) root.fetch(Album_.albumSongs, JoinType.LEFT).fetch(AlbumSong_.song, JoinType.LEFT);
-//        Join<Album, AlbumSong> albumSongJoin = (Join<Album, AlbumSong>) root.fetch(Album_.albumSongs, JoinType.LEFT);
 
         query.where(criteriaBuilder.equal(root.get(Album_.id), criteriaBuilder.parameter(Long.class, "id")))
                 .distinct(true);
 
-        return em.createQuery(query).setParameter("id", id).getResultList().stream().findFirst().orElseThrow(() -> new NotFoundException());
+        return em.createQuery(query).setParameter("id", id).getResultList().stream().findFirst().orElseThrow(NotFoundException::new);
     }
 
 
@@ -72,11 +78,9 @@ public class AlbumService {
         CriteriaQuery<AlbumDTOO> query = criteriaBuilder.createQuery(AlbumDTOO.class);
         Root<Album> root = query.from(Album.class);
         LOGGER.info("Podstawy criteria buildera");
-//
-        Join<Album, Artist> artistJoin = (Join<Album, Artist>) root.join(Album_.artistId, JoinType.LEFT);
-        Join<Album,AlbumSong> albumAlbumSongJoin = (Join<Album, AlbumSong>) root.join(Album_.albumSongs, JoinType.LEFT);
-        LOGGER.info("Join AlbumSong i Artist");
 
+        Join<Album, Artist> artistJoin = root.join(Album_.artistId, JoinType.LEFT); //Nie może tutaj  byc fetch, bo w select dokładnie określamy czego potrzebujemy
+        LOGGER.info("Join AlbumSong i Artist");
 
         query.select(
                 criteriaBuilder.construct(AlbumDTOO.class, root.get(Album_.title), root.get(Album_.edition), artistJoin.get(Artist_.name))
@@ -89,32 +93,46 @@ public class AlbumService {
         return em.createQuery(query).setParameter("id", id).getResultList().stream().findFirst().orElseThrow(() -> new NotFoundException());
     }
 
-//select a.id,a.title,a.edition, ar.name, aso.position, song.title,song.remarks,song.duration from Album a left join a.artistId ar left join a.albumSongs aso left join aso.song song where a.id=:id
+    public List<AlbumDTOO> getAllAlbumDTOOrderByAlbumTitle() {
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<AlbumDTOO> query = criteriaBuilder.createQuery(AlbumDTOO.class);
+        Root<Album> root = query.from(Album.class);
+        LOGGER.info("Podstawy criteria buildera");
+        Join<Album, Artist> artistJoin = (Join<Album, Artist>) root.join(Album_.artistId);
+        LOGGER.info("Fetch Artist");
+
+        query.select(criteriaBuilder.construct(AlbumDTOO.class, root.get(Album_.title), root.get(Album_.edition),artistJoin.get(Artist_.name)))
+                .orderBy(criteriaBuilder.asc(root.get(Album_.title)));
+        LOGGER.info("Stworzono query");
+
+        return em.createQuery(query).getResultList();
+    }
+
+//select a.id,a.title,a.edition, ar.name, aso.position, song from Album a left join a.artistId ar left join a.albumSongs aso left join aso.song song where a.id=:id
     @SuppressWarnings("unchecked")
-    public AlbumDTOO getAlbumDTOOWithResultTransform(Long id) throws Throwable {
-        return (AlbumDTOO) em.createNamedQuery("Album.findByIdWithResultTransformer")
-                .unwrap(org.hibernate.query.Query.class)
+    public AlbumDTO getAlbumDTOOWithResultTransform(Long id) {
+        return (AlbumDTO) em.createNamedQuery("Album.findByIdWithResultTransformer")
+                .unwrap(Query.class)
                 .setResultTransformer(
                         new ResultTransformer() {
 
-                            final Map<Long,AlbumDTOO> albumDTOOMap = new LinkedHashMap<>();
+                            final Map<Long,AlbumDTO> albumDTOOMap = new LinkedHashMap<>();
 
                             @Override
                             public Object transformTuple(Object[] objects, String[] strings) {
 
                                 Long albumId = (Long) objects[0];
-                                albumDTOOMap.putIfAbsent(albumId,new AlbumDTOO(
+                                albumDTOOMap.putIfAbsent(albumId,new AlbumDTO(
                                         (String) objects[1],
                                         (String) objects[2],
                                         artistMapper.fromArtist((Artist) objects[3]),
                                         new LinkedHashSet<>()
                                 ));
 
-                                if (objects[4] instanceof Integer && objects[5] instanceof String && objects[6] instanceof String && objects[7] instanceof Integer) {
-                                    albumDTOOMap.get(albumId).songs().add(new AlbumSongsDTO((Integer) objects[4],new SongDTO((String) objects[5],(String) objects[6],(Integer) objects[7])));
+                                if (objects[4] instanceof AlbumSong) {
+                                    albumDTOOMap.get(albumId).albumSongsDTO().add(albumSongMapper.fromAlbumSong((AlbumSong) objects[4]));
                                 }
-
-                                return albumDTOOMap.get(albumId);
+                                return albumDTOOMap;
                             }
 
                             @Override
@@ -127,19 +145,19 @@ public class AlbumService {
 
 //    select a.id,a.title,a.edition, ar.name, aso.position, song.title,song.remarks,song.duration from Album a left join a.artistId ar left join a.albumSongs aso left join aso.song song
 @SuppressWarnings("unchecked")
-public List<AlbumDTOO> getAlbumDTOOListWithResultTransform() {
+public List<AlbumDTO> getAlbumDTOOListWithResultTransform() {
     return em.createNamedQuery("Album.findWithResultTransformer")
             .unwrap(org.hibernate.query.Query.class)
             .setResultTransformer(
                     new ResultTransformer() {
 
-                        final Map<Long,AlbumDTOO> albumDTOOMap = new LinkedHashMap<>();
+                        final Map<Long,AlbumDTO> albumDTOOMap = new LinkedHashMap<>();
 
                         @Override
                         public Object transformTuple(Object[] objects, String[] strings) {
 
                             Long albumId = (Long) objects[0];
-                            albumDTOOMap.putIfAbsent(albumId,new AlbumDTOO(
+                            albumDTOOMap.putIfAbsent(albumId,new AlbumDTO(
                                     (String) objects[1],
                                     (String) objects[2],
                                     artistMapper.fromArtist((Artist) objects[3]),
@@ -147,7 +165,7 @@ public List<AlbumDTOO> getAlbumDTOOListWithResultTransform() {
                             ));
 
                             if (objects[4] instanceof Integer && objects[5] instanceof String && objects[6] instanceof String && objects[7] instanceof Integer) {
-                                albumDTOOMap.get(albumId).songs().add(new AlbumSongsDTO((Integer) objects[4],new SongDTO((String) objects[5],(String) objects[6],(Integer) objects[7])));
+                                albumDTOOMap.get(albumId).albumSongsDTO().add(new AlbumSongsDTO((Integer) objects[4],new SongDTO((String) objects[5],(String) objects[6],(Integer) objects[7])));
                             }
 
                             return albumDTOOMap.get(albumId);
@@ -165,36 +183,10 @@ public List<AlbumDTOO> getAlbumDTOOListWithResultTransform() {
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Album> query = criteriaBuilder.createQuery(Album.class);
         Root<Album> root = query.from(Album.class);
-        Join<Album, Artist> artistJoin = (Join<Album, Artist>) root.join(Album_.artistId);
+        Join<Album, Artist> artistJoin =  root.join(Album_.artistId);
 
         return em.createQuery(query).getResultList();
     }
-
-    public List<AlbumDTOO> getAllAlbumDTOOOrderByAlbumTitle() {
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<AlbumDTOO> query = criteriaBuilder.createQuery(AlbumDTOO.class);
-        Root<Album> root = query.from(Album.class);
-        LOGGER.info("Podstawy criteria buildera");
-        Join<Album, Artist> artistJoin = (Join<Album, Artist>) root.join(Album_.artistId);
-        LOGGER.info("Fetch Artist");
-
-        query.select(criteriaBuilder.construct(AlbumDTOO.class, root.get(Album_.title), root.get(Album_.edition),artistJoin.get(Artist_.name)))
-                        .orderBy(criteriaBuilder.asc(root.get(Album_.title)));
-        LOGGER.info("Stworzono query");
-
-        return em.createQuery(query).getResultList();
-    }
-
-
-//    public List<Album> getAllAlbum() {
-//        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-//        CriteriaQuery<Album> query = criteriaBuilder.createQuery(Album.class);
-//        Root<Album> root = query.from(Album.class);
-//        Join<Album, Artist> artistJoin = (Join<Album, Artist>) root.fetch(Album_.artistId,JoinType.LEFT);
-//
-//
-//        return em.createQuery(query).getResultList();
-//    }
 
     public List<AlbumDTOO> getAlbumsByArtistId(Long id) {
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
@@ -202,7 +194,7 @@ public List<AlbumDTOO> getAlbumDTOOListWithResultTransform() {
         Root<Album> root = query.from(Album.class);
         Join<Album, Artist> artistJoin = root.join(Album_.artistId);
 
-        query.select(criteriaBuilder.construct(AlbumDTOO.class, root.get(Album_.title), root.get(Album_.edition), root.get(Album_.artistId)))
+        query.select(criteriaBuilder.construct(AlbumDTOO.class, root.get(Album_.title), root.get(Album_.edition), artistJoin.get(Artist_.name)))
                 .where(criteriaBuilder.equal(artistJoin.get(Artist_.id), criteriaBuilder.parameter(Long.class, "id")));
 
         return em.createQuery(query).setParameter("id", id).getResultList();
