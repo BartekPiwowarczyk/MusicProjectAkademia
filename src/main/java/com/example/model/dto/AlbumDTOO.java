@@ -7,5 +7,5 @@ import com.example.model.entity.Song;
 import java.util.Collection;
 import java.util.List;
 
-public record AlbumDTOO(String title, String edition, String artistName) {
+public record AlbumDTOO(String title, String edition, String artist, Collection<AlbumSongsDTO> songs) {
 }

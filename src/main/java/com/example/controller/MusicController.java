@@ -48,7 +48,7 @@ public class MusicController {
     }
 
 
-        @GET
+    @GET
     @Path("/albums/{id}")
     public AlbumDTOO getAlbumDTOById(@PathParam("id") Long id) {
         LOGGER.info("Request arrived with param: {}", id);
@@ -58,6 +58,31 @@ public class MusicController {
             throw new NotFoundException();
         }
     }
+
+    @GET
+    @Path("/albums/transform/{id}")
+    public AlbumDTOO getAlbumDTOByIdWithResultTransform(@PathParam("id") Long id) {
+        LOGGER.info("Request arrived with param: {}", id);
+        try {
+            return albumService.getAlbumDTOOWithResultTransform(id);
+        } catch (Exception e) {
+            throw new NotFoundException();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @GET
+    @Path("/albums/transform")
+    public List<AlbumDTOO> getAlbumDTOListByIdWithResultTransform() {
+        LOGGER.info("Request arrived");
+        try {
+            return albumService.getAlbumDTOOListWithResultTransform();
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
+    }
+
     @GET
     @Path("/albums/entity/{id}")
     public Album getAlbumById(@PathParam("id") Long id) {
