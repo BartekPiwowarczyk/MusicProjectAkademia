@@ -8,9 +8,9 @@ import org.mapstruct.Mapping;
 @Mapper(uses = SongMapper.class,componentModel = "cdi")
 public interface AlbumSongMapper {
 
-    @Mapping(source="songDTO",target = "song")
+    @Mapping(source="song",target = "song")
     AlbumSong fromAlbumSongDTO(AlbumSongsDTO albumSongsDTO);
 
-    @Mapping(source="song",target = "songDTO")
+    @Mapping(source="song",target = "song")
     AlbumSongsDTO fromAlbumSong(AlbumSong albumSong);
 }

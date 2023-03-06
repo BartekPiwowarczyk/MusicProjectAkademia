@@ -37,6 +37,7 @@ public abstract class AlbumMapper {
     @Mapping(source = "albumSongs",target = "albumSongsDTO")
     public abstract AlbumDTO fromAlbum(Album album);
 
+
 //    public List<AlbumSongsDTO> getAlbumSongsDTO(List<AlbumSong> albumSongs) {
 //        return albumSongs.stream()
 //                .map(as -> new AlbumSongsDTO(as.getPosition(),new SongDTO(as.getSong().getTitle(),as.getSong().getRemarks(),as.getSong().getDuration())))
