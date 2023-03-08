@@ -1,9 +1,12 @@
 package com.example.spotify.controller;
 
+import com.example.spotify.auth.AuthConfig;
+import com.example.spotify.auth.AuthEndpoint;
+import com.example.spotify.auth.SpotifyAuthResponse;
 import com.example.spotify.interfaces.SpotifyInterface;
 import com.example.spotify.model.dto.AlbumSpotify;
 import com.example.spotify.model.dto.SearchAlbumResponse;
-import com.example.spotify.TokenService;
+import com.example.spotify.auth.TokenService;
 import com.example.spotify.service.SpotifyAlbumService;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
@@ -33,35 +36,41 @@ public class SpotifyEndpoint {
     @Inject
     SpotifyAlbumService spotifyAlbumService;
 
+    @Inject
+    TokenService tokenService;
+
+
     @GET
     @Path("/albums/{albumId}")
     public AlbumSpotify getAlbum(@PathParam("albumId") String albumId) {
-        if(TokenService.getAuth() == null) {
+        if(tokenService.getAuth() == null) {
+            LOGGER.info("New Token");
             authEndpoint.authSpotify();
         }
-        LOGGER.info("Authorization: "  + TokenService.getToken());
-        return  spotifyInterface.getAlbum(TokenService.getToken(), albumId);
+        LOGGER.info("Authorization: "  + tokenService.getToken());
+        return  spotifyInterface.getAlbum(tokenService.getToken(), albumId);
         }
 
     @GET
     @Path("/albums/search")
     public SearchAlbumResponse getAlbumFromSearch(@QueryParam("album") String album) {
-        if(TokenService.getAuth() == null) {
+        if(tokenService.getAuth() == null) {
+            LOGGER.info("New Token");
             authEndpoint.authSpotify();
         }
 
-        LOGGER.info("Authorization: "  + TokenService.getToken());
-        return spotifyInterface.getSearch(TokenService.getToken(),album, "album");
+        LOGGER.info("Authorization: "  + tokenService.getToken());
+        return spotifyInterface.getSearch(tokenService.getToken(),album, "album");
     }
 
     @POST
     @Path("/albums/{albumId}")
     public AlbumSpotify addAlbum(@PathParam("albumId") String albumId) {
-        if(TokenService.getAuth() == null) {
+        if(tokenService.getAuth() == null) {
             authEndpoint.authSpotify();
         }
-        LOGGER.info("Authorization: "  + TokenService.getToken());
-        AlbumSpotify albumToSave = spotifyInterface.getAlbum(TokenService.getToken(), albumId);
+        LOGGER.info("Authorization: "  + tokenService.getToken());
+        AlbumSpotify albumToSave = spotifyInterface.getAlbum(tokenService.getToken(), albumId);
         spotifyAlbumService.addAlbumSpotifyToDb(albumToSave);
         return  albumToSave;
     }

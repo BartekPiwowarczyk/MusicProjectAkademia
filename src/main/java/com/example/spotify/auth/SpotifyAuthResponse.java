@@ -1,4 +1,4 @@
-package com.example.spotify.model;
+package com.example.spotify.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

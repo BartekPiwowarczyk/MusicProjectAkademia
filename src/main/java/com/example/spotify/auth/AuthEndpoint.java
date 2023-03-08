@@ -1,8 +1,5 @@
-package com.example.spotify.controller;
+package com.example.spotify.auth;
 
-import com.example.spotify.TokenService;
-import com.example.spotify.interfaces.SpotifyAuthInterface;
-import com.example.spotify.model.SpotifyAuthResponse;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.enterprise.context.RequestScoped;
@@ -24,8 +21,8 @@ public class AuthEndpoint {
     @Inject
     TokenService tokenService;
 
-    final String CLIENT_ID = "02f1c18445dd4955b674899586967b41";
-    final String CLIENT_SECRET = "be27c4aa85b64b3dbc7c0507e8aa5e54";
+    @Inject
+    AuthConfig authConfig;
 
     @RestClient
     SpotifyAuthInterface spotifyAuthInterface;
@@ -41,7 +38,7 @@ public class AuthEndpoint {
 
     private String computeBasicHeader() {
         return "Basic " + Base64.getEncoder().encodeToString(
-                (CLIENT_ID + ":" + CLIENT_SECRET).getBytes(StandardCharsets.UTF_8)
+                (authConfig.getClientId() + ":" + authConfig.getClientSecret()).getBytes(StandardCharsets.UTF_8)
         );
     }
 

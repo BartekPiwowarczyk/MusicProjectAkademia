@@ -1,6 +1,6 @@
-package com.example.spotify.interfaces;
+package com.example.spotify.auth;
 
-import com.example.spotify.model.SpotifyAuthResponse;
+import com.example.spotify.auth.SpotifyAuthResponse;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import javax.ws.rs.*;

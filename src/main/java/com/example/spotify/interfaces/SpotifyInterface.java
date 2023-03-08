@@ -10,7 +10,6 @@ import javax.ws.rs.*;
 public interface SpotifyInterface {
     @Path("/albums/{name}")
     @GET
-    @Consumes("application/json")
     AlbumSpotify getAlbum(
             @HeaderParam("Authorization") String authorization,
             @PathParam("name") String name
@@ -18,8 +17,6 @@ public interface SpotifyInterface {
 
     @Path("/search")
     @GET
-    @Consumes("application/application")
-    @Produces("application/json")
     SearchAlbumResponse getSearch(
             @HeaderParam("Authorization") String authorization,
             @QueryParam("q") String search,
